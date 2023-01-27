@@ -101,6 +101,8 @@
     <script>
         let baseQuiz = "";
         xhttp = new XMLHttpRequest();
+        var api = "/api/quiz/";
+
         function buscarQuiz() {
             xhttp.open("GET", "/api/quiz/");
             xhttp.send();
@@ -111,9 +113,9 @@
         buscarQuiz();
 
         function gravarQuiz(quiz) {
-            
+
             // alert(JSON.stringify(quiz));
-            
+
             xhttp.open("PUT", "/api/quiz/");
             xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhttp.send(JSON.stringify(quiz));
@@ -192,7 +194,7 @@
                 msg += "Necessário preencher a pergunta!<br>";
             }
 
-            // validar se todas as opções de respta foram preenchida
+            // validar se todas as opções de respostas foram preenchidas
             if (quiz.respostas.length < 4) {
                 msg += "Necessário preencher todas as opções de resposta!<br>";
             }
@@ -216,17 +218,15 @@
                 alerta.classList.add("alert-success");
             }
 
-            
+
 
             // console.log(quiz);
             if (id != "") {
                 quiz.id = id;
-            } 
+            }
             console.log(quiz);
             gravarQuiz(quiz);
-            // localStorage.setItem('baseQuiz', JSON.stringify(baseQuiz));
-            // limparForm();
-            // buscarQuiz();
+
         }
 
         function verificaOpcaoRepetida(quiz) {
@@ -266,16 +266,19 @@
 
         function apagar() {
             let id = document.getElementById("id").value;
-            if(id == ""){
+            if (id == "") {
                 alerta.innerHTML = "Necessário selecionar uma pergunta!";
                 alerta.classList.add("alert-danger");
-                return ;
+                return;
             }
             if (confirm("Tem certeza que quer apagar essa pergunda?")) {
-                baseQuiz.splice(id, 1);
-                localStorage.setItem('baseQuiz', JSON.stringify(baseQuiz));
-                limparForm();
-                buscarQuiz();
+                xhttp.open("DELETE", api + id);
+                xhttp.send();
+                xhttp.onload = function () {
+                    alert(this.responseText);
+                    limparForm();
+                    buscarQuiz();
+                }
             }
 
         }
